@@ -1,13 +1,78 @@
-ID,Timestamp,Email Address,Roughly how often do you interact with your smartphone?,Do you have more than one cell phone? Work/Personal,How old are you?,Gender,What operating system does your personal phone use?
-1,3/4/2017 14:22,debra.lilley@btinternet.com,About once an hour,One phone - used both for work and personal,55-64,Female,iPhone - iOS 10.X
-2,3/4/2017 16:39,jljones.dt@gmail.com,Multiple times per hour,One phone - used both for work and personal,25-34,Male,iPhone - iOS 10.X
-3,3/4/2017 18:18,victorwwang@gmail.com,Multiple times per hour,One phone - used both for work and personal,25-34,Male,iPhone - iOS 10.X
-4,3/5/2017 8:58,Dbakevlar@gmail.com,About once an hour,One phone - used both for work and personal,45-54,Female,iPhone - iOS 10.X
-5,3/5/2017 18:11,marylansleyoriginals@gmail.com,About once an hour,One phone - used both for work and personal,45-54,Female,iPhone - iOS 10.X
-6,3/5/2017 18:37,epnels02@gmail.com,About once an hour,One phone - personal use only,25-34,Male,iPhone - iOS 10.X
-7,3/6/2017 14:47,monisha.sabnis@gmail.com,Multiple times per hour,One phone - used both for work and personal,25-34,Female,iPhone - iOS 10.X
-8,3/7/2017 6:45,jill.wishart@hotmail.com,Multiple times per hour,One phone - used both for work and personal,25-34,Female,iPhone - iOS 10.X
-9,3/7/2017 18:34,ecafferky@yahoo.com,Multiple times per hour,One phone - used both for work and personal,45-54,Female,iPhone - iOS 10.X
-10,3/8/2017 11:40,kristileeparish@gmail.com,Multiple times per hour,One phone - used both for work and personal,25-34,Female,iPhone - iOS 10.X
-11,3/8/2017 13:25,k_nelson1994@hotmail.com,Multiple times per hour,One phone - personal use only,18-24,Male,Android - 6.X (Marshmallow)
-12,3/11/2017 14:07,tglisft1137@gmail.com,Multiple times per hour,One phone - used both for work and personal,25-34,Male,Android - 7.X (Nougat)
+Timestamp,Email Address,Roughly how often do you interact with your smartphone?,Do you have more than one cell phone? Work/Personal,How old are you?,Gender,What operating system does your personal phone use?,How contacted?,Friend/Stranger?
+3/4/2017 14:22:16,debra.lilley@btinternet.com,About once an hour,One phone – used both for work and personal,55-64,Female,iPhone - iOS 10.X,Facebook,Friend
+3/4/2017 16:39:18,jljones.dt@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Facebook,Friend
+3/4/2017 18:18:19,victorwwang@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Facebook,Friend
+3/5/2017 8:58:12,Dbakevlar@gmail.com,About once an hour,One phone – used both for work and personal,45-54,Female,iPhone - iOS 10.X,Facebook,Friend
+3/5/2017 18:11:14,marylansleyoriginals@gmail.com,About once an hour,One phone – used both for work and personal,45-54,Female,iPhone - iOS 10.X,Facebook,Family/Friend
+3/5/2017 18:37:35,epnels02@gmail.com,About once an hour,One phone – personal use only,25-34,Male,iPhone - iOS 10.X,In Person,Family/Friend
+3/6/2017 14:47:49,monisha.sabnis@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,Facebook,Friend
+3/7/2017 6:45:18,jill.wishart@hotmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,,
+3/7/2017 18:34:28,ecafferky@yahoo.com,Multiple times per hour,One phone – used both for work and personal,45-54,Female,iPhone - iOS 10.X,Facebook,Family/Friend
+3/8/2017 11:40:14,kristileeparish@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,Facebook,Family/Friend
+3/8/2017 13:25:33,k_nelson1994@hotmail.com,Multiple times per hour,One phone – personal use only,18-24,Male,Android - 6.X (Marshmallow),Facebook,Family/Friend
+3/11/2017 14:07:35,tglisft1137@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,Android - 7.X (Nougat),Google Hangouts,Family/Friend
+3/12/2017 16:13:59,nananeliz@yahoo.com,About once every 4-8 hours,Two or More Phones – at least one for personal use only,45-54,Female,iPhone - iOS 10.X,Facebook,Friend
+3/13/2017 14:44:06,dlam34@gmail.com,About once every 2-4 hours,One phone – used both for work and personal,35-44,Male,iPhone - iOS 10.X,Facebook,Family/Friend
+3/13/2017 15:06:46,parishkarlee@gmail.com,Multiple times per hour,One phone – personal use only,18-24,Female,iPhone - iOS 9.X,Facebook,Family/Friend
+3/13/2017 16:54:40,cfsanchez13@gmail.com,About once an hour,Two or More Phones – at least one for personal use only,25-34,Male,iPhone - iOS 10.X,Text,Family/Friend
+3/13/2017 18:12:49,ayma1024@gmail.com,Multiple times per hour,One phone – personal use only,25-34,Male,iPhone - iOS 10.X,,
+3/14/2017 4:29:45,myvelvetmoonlight@gmail.com,About once an hour,One phone – personal use only,25-34,Female,iPhone - iOS 10.X,,
+3/14/2017 7:27:15,r.daland@gmail.com,Multiple times per hour,One phone – used both for work and personal,35-44,Male,Android - Other / Don't Know,Facebook,Friend
+3/14/2017 18:49:09,enerfit@telus.net,About once every 2-4 hours,One phone – used both for work and personal,55-64,Female,iPhone - iOS 9.X,Facebook,Family/Friend
+3/14/2017 20:21:13,wdelmoli@yahoo.com,Multiple times per hour,One phone – used both for work and personal,45-54,Female,iPhone - iOS 10.X,In Person,Family/Friend
+3/15/2017 10:43:13,ackerman.jaime@gmail.com,About once every 2-4 hours,One phone – used both for work and personal,35-44,Female,iPhone - iOS 9.X,,
+3/15/2017 15:16:25,madisonwfai@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,,
+3/16/2017 9:20:34,mackenzie.parish1@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Female,iPhone - iOS 10.X,Facebook,Family/Friend
+3/17/2017 17:37:37,giandionisio@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Male,iPhone - iOS 10.X,,
+3/18/2017 5:38:44,pioro1@gmail.com,About once an hour,One phone – used both for work and personal,35-44,Male,Android - 5.X (Lollipop),,
+3/18/2017 6:05:18,aishaniazi@gmail.com,About once an hour,Two or More Phones – at least one for personal use only,35-44,Female,iPhone - iOS 10.X,,
+3/18/2017 8:01:16,jessicalrogers1@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,,
+3/18/2017 9:23:36,mbittmann@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Twitter,Friend
+3/18/2017 10:24:05,kevin_closson@yahoo.com,About once an hour,One phone – used both for work and personal,45-54,Prefer not to say,Android - Other / Don't Know,Twitter,Friend
+3/18/2017 19:17:56,nomaan@yahoo.com,Multiple times per hour,One phone – used both for work and personal,35-44,Male,iPhone - iOS 10.X,,
+3/20/2017 11:37:13,trey.wales@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,In Person,Friend
+3/20/2017 15:35:50,kerry.nixon@cbre.com,About once an hour,One phone – used both for work and personal,25-34,Female,iPhone - Other / Don't Know,Facebook,Friend
+3/20/2017 18:15:35,john.harllee@yahoo.com,Multiple times per hour,One phone – used both for work and personal,45-54,Male,iPhone - iOS 10.X,Facebook,Friend
+3/22/2017 4:51:43,miodusze101@gmail.com,About once every 2-4 hours,One phone – personal use only,25-34,Male,iPhone - iOS 10.X,Text,Friend
+3/23/2017 9:06:06,christine.a.lam@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - Other / Don't Know,Facebook,Family
+3/24/2017 12:14:04,jazzbean69@gmail.com,About once an hour,One phone – used both for work and personal,18-24,Female,iPhone - iOS 10.X,,
+3/24/2017 18:01:41,bbyjen89@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - Other / Don't Know,In Person,Friend
+3/24/2017 18:10:19,hvphan@bu.edu,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - Other / Don't Know,Facebook,Friend
+3/25/2017 12:33:01,cmay1987@gmail.com,About once an hour,One phone – personal use only,25-34,Male,Android - 6.X (Marshmallow),Facebook,Friend
+3/25/2017 13:14:04,christine.mngu@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,In Person,Friend
+3/25/2017 13:21:41,hmnelson@shaw.ca,Multiple times per hour,One phone – used both for work and personal,45-54,Male,Android - Other / Don't Know,Facebook,Family/Friend
+3/25/2017 15:02:59,dannybechillin@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Male,iPhone - iOS 10.X,,
+3/25/2017 15:17:03,silvadalila1998@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Female,iPhone - iOS 10.X,,
+3/25/2017 15:42:25,shanif@uci.edu,Multiple times per hour,One phone – personal use only,18-24,Female,iPhone - iOS 10.X,,
+3/25/2017 16:19:30,v4miku@gmail.com,Multiple times per hour,One phone – used both for work and personal,Under 18,Female,iPhone - iOS 10.X,,
+3/25/2017 16:55:19,lisa.kramer04@gmail.com,Multiple times per hour,One phone – personal use only,25-34,Female,iPhone - iOS 10.X,Facebook,Family/Friend
+3/25/2017 17:02:55,lucyhwang@yahoo.com,Multiple times per hour,One phone – personal use only,Under 18,Female,iPhone - iOS 10.X,,
+3/25/2017 17:51:55,rjmcleod@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,Android - 7.X (Nougat),Facebook,Family/Friend
+3/25/2017 22:17:07,rparish@innovativebenefits.ca,Multiple times per hour,One phone – used both for work and personal,45-54,Male,Blackberry,Facebook,Family/Friend
+3/26/2017 6:01:16,evelyncutts@gmail.com,Multiple times per hour,One phone – personal use only,45-54,Female,iPhone - iOS 10.X,Facebook,Family/Friend
+3/26/2017 10:11:26,nelson.sean@hotmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Facebook,Family/Friend
+3/26/2017 17:22:55,thwapit@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,In Person,Friend
+3/26/2017 19:01:42,graysonparish@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Male,Android - Other / Don't Know,Facebook,Family/Friend
+3/27/2017 13:57:57,amy.xm.lai@berkeley.edu,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,Text,Friend
+3/27/2017 14:02:23,dnoyce@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Text,Friend
+3/27/2017 20:30:18,changster428@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,In Person,Friend
+3/28/2017 9:16:37,calliedishman@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Female,iPhone - iOS 10.X,,
+3/28/2017 10:00:31,alexa.snyder11@gmail.com,Multiple times per hour,One phone – personal use only,Under 18,Female,iPhone - iOS 10.X,,
+3/28/2017 11:15:31,joneswk@mymail.vcu.edu,Multiple times per hour,One phone – personal use only,18-24,Male,iPhone - iOS 10.X,,
+3/28/2017 12:29:51,untitleduser501@gmail.com,Multiple times per hour,One phone – personal use only,25-34,Male,iPhone - iOS 9.X,,
+3/28/2017 13:31:33,jrkenneyjr@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Slack,Friend
+3/28/2017 15:36:16,hauteral@gmail.com,Multiple times per hour,One phone – personal use only,18-24,Male,Android - 7.X (Nougat),,
+3/28/2017 15:55:50,elykreutz@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Male,iPhone - iOS 10.X,,
+3/28/2017 15:59:23,sage.hackett@gmail.com,Multiple times per hour,One phone – used both for work and personal,Under 18,Female,Android - Other / Don't Know,,
+3/28/2017 16:46:32,mms260@zips.uakron.edu,Multiple times per hour,One phone – used both for work and personal,18-24,Female,iPhone - iOS 10.X,,
+3/28/2017 17:10:31,svetlanariva@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,Slack,Friend
+3/28/2017 18:55:20,jdcooper1969@gmail.com,Multiple times per hour,One phone – used both for work and personal,45-54,Male,iPhone - iOS 9.X,,
+3/28/2017 19:20:39,jenna.d.clifton@gmail.com,Multiple times per hour,One phone – personal use only,18-24,Female,iPhone - iOS 10.X,,
+3/28/2017 19:20:47,hannahcote13@gmail.com,Multiple times per hour,One phone – personal use only,Under 18,Female,iPhone - iOS 10.X,,
+3/28/2017 19:23:00,A00496100@ag.inter.edu,Multiple times per hour,One phone – used both for work and personal,25-34,Female,iPhone - iOS 10.X,,
+3/29/2017 10:19:28,ericrupp05@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,,
+3/29/2017 10:31:11,samorghini@gmail.com,Multiple times per hour,One phone – used both for work and personal,18-24,Male,iPhone - iOS 10.X,,
+3/29/2017 13:26:28,hruben42@gmail.com,About once an hour,One phone – personal use only,25-34,Male,Android - 7.X (Nougat),,
+3/29/2017 18:09:56,dannyrdodd@gmail.com,Multiple times per hour,One phone – used both for work and personal,25-34,Male,Android - 6.X (Marshmallow),,
+3/29/2017 23:34:36,hiimjudi@gmail.com,Multiple times per hour,One phone – personal use only,25-34,Female,iPhone - Other / Don't Know,Text,Friend
+4/1/2017 12:24:10,ericsonshi1@gmail.com,About once an hour,One phone – used both for work and personal,25-34,Male,iPhone - iOS 10.X,Text,Friend
