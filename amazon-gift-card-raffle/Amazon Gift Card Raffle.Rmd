@@ -91,9 +91,9 @@ d <- unique(d, by="Username")
 write.csv(d, "Amazon Gift Card Raffle.csv")
 ```
 
-Since we're using "Username" (the subject's email address) as the identifier, and some subjects misspelled their email addresses in the daily surveys, I need to manually spot check and combine certain rows.  Afterward, I will calculate the number of entries for each subject, create a row for each entry, and number each row.  Finally, I will select 5 ID numbers from 1 to 50 (50 being the total number of entries).
+Since we're using "Username" (the subject's email address) as the identifier, and some subjects misspelled their email addresses in the daily surveys, I need to manually spot check and combine certain rows.  Afterward, I will calculate the number of entries for each subject, create a row for each entry, and number each row.  Finally, I will select 5 ID numbers from 1 to 57 (57 being the total number of entries).
 
 ```{r}
 # Winning IDs 
-sample(1:50, size=5, replace=FALSE)
+sample(1:57, size=5, replace=FALSE)
 ```
