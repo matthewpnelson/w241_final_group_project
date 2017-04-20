@@ -1,0 +1,99 @@
+---
+title: "Amazon Gift Card Raffle"
+author: "Andrew Lam"
+date: "4/19/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load packages
+library(data.table)
+```
+
+```{r}
+set.seed(1590)
+```
+
+The purpose of this file is to document the giveaway of five $100 Amazon gift cards.
+
+Eligibility requirements:
+
+"In order to be eligible for the Amazon Gift Card Raffle, you must complete >90% of these daily surveys and do so within 24 hours of it being emailed to you. Individuals who respond to 100% of the surveys will receive two entries. So, the more you respond the higher your chances of winning!"
+
+```{r}
+# Calculation of number of responses needed to qualify for raffle (i.e., >90% response rate)
+
+# For subjects in pilot
+21 * 0.9
+
+# For subjects in experiment
+14 * 0.9
+```
+
+```{r}
+# Load data
+ds1 <- read.csv("./DS1 - Treatment Group Post Treatment Survey.csv")
+ds1 <- data.table(ds1)
+
+ds2 <- read.csv("./DS2 - Control Group Post Treatment Survey.csv")
+ds2 <- data.table(ds2)
+
+ds3 <- read.csv("./DS3 - Baseline Survey (Both Groups).csv")
+ds3 <- data.table(ds3)
+```
+
+```{r}
+# Initial look at data 
+head(ds1)
+colnames(ds1)
+```
+
+```{r}
+# Initial look at data 
+head(ds2)
+colnames(ds2)
+```
+
+```{r}
+# Initial look at data 
+head(ds3)
+colnames(ds3)
+```
+
+```{r}
+# Only keeping "Timestamp" and "Username" columns
+ds1 <- ds1[ , c("Timestamp", "Username")]
+ds2 <- ds2[ , c("Timestamp", "Username")]
+ds3 <- ds3[ , c("Timestamp", "Username")]
+```
+
+```{r}
+# Merging data
+d <- rbind(ds1, ds2, ds3)
+```
+
+```{r}
+# Counting number of responses per subject
+d <- d[ , Counts := .N, by = "Username"]
+```
+
+```{r}
+# Subset on unique rows
+d <- unique(d, by="Username")
+```
+
+```{r}
+# Write to CSV
+write.csv(d, "Amazon Gift Card Raffle.csv")
+```
+
+Since we're using "Username" (the subject's email address) as the identifier, and some subjects misspelled their email addresses in the daily surveys, I need to manually spot check and combine certain rows.  Afterward, I will calculate the number of entries for each subject, create a row for each entry, and number each row.  Finally, I will select 5 ID numbers from 1 to 50 (50 being the total number of entries).
+
+```{r}
+# Winning IDs 
+sample(1:50, size=5, replace=FALSE)
+```
