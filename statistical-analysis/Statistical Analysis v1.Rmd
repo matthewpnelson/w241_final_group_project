@@ -1,0 +1,202 @@
+---
+title: "Statistical Analysis"
+author: "Andrew Lam"
+date: "4/21/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load packages
+library(data.table)
+```
+
+# Data Cleaning
+
+Made the following changes in "assignments-refined.csv":
+
+1. For pilot group, converted NAs to 1 in pilot column
+2. For pilot group, converted NAs to 0 or 1 in treat column 
+3. In pilot group, only kept one week of treatment data (removed data from 3/29 to 4/4)
+
+```{r}
+# Load data
+assignments <- read.csv("./assignments-refined.csv")
+d <- read.csv("./everyone-refined.csv")
+d <- data.table(d)
+# d$timestamp <-as.Date(d$timestamp,format='%Y/%m/%d')
+```
+
+```{r}
+# d[username == "jljones.dt@gmail.com" | username == "victorwwang@gmail.com" | username == "jill.wishart@hotmail.com"]
+
+# merge(d, assignments, by.x = "username", by.y = "email")
+
+# assignments[match(trimws(d$username), trimws(assignments$email)), "treat"]
+```
+
+# Average Outcomes
+
+```{r}
+# Baseline - Control
+baseline_control <- d[assignment == 'b' & treat == 0, ]
+
+summary(baseline_control$stress)
+```
+
+```{r}
+sd(baseline_control$stress)
+```
+
+```{r}
+hist(baseline_control$stress, breaks=seq(0,5))
+```
+
+```{r}
+# Baseline - Treatment
+baseline_treatment <- d[assignment == 'b' & treat == 1, ]
+
+summary(baseline_treatment$stress)
+```
+
+```{r}
+sd(baseline_treatment$stress)
+```
+
+
+```{r}
+hist(baseline_treatment$stress, breaks=seq(0,5))
+```
+
+```{r}
+# Control
+control <- d[assignment == 'c', 'stress']
+
+summary(control$stress)
+```
+
+```{r}
+sd(control$stress)
+```
+
+```{r}
+hist(control$stress, breaks=seq(0,5))
+```
+
+```{r}
+# Treatment 
+treatment <- d[assignment == 't', 'stress']
+
+summary(treatment$stress)
+```
+
+```{r}
+sd(treatment$stress)
+```
+
+```{r}
+hist(treatment$stress, breaks=seq(0,5))
+```
+
+# ATE
+
+```{r}
+# treatment - baseline_treatment 
+mean(treatment$stress) - mean(baseline_treatment$stress)
+
+# control - baseline_control
+mean(control$stress) - mean(baseline_control$stress)
+
+# difference in difference 
+ate <- (mean(treatment$stress) - mean(baseline_treatment$stress)) - (mean(control$stress) - mean(baseline_control$stress))
+```
+
+# CACE
+
+```{r}
+# CACE = ATE / alpha 
+# alpha = share of treatment subjects actually treated (application rate, compliance rate)
+# compliers = defined as those who never answered no for the "dnd" variable; assumes that the subject kept dnd on for days he/she did not answer the survey
+# alternatively, compliers could be defined as those who answered all 7 surveys during the treatment period and never answered no for the "dnd" variable
+```
+
+```{r}
+# Number of people in the treatment group that did not comply
+alpha_num <- nrow(unique(d[dnd == "No" & treat == 1, "username"]))
+alpha_num
+```
+
+```{r}
+# Total number of people in treatment
+alpha_denom <- nrow(unique(d[dnd == "Yes" | dnd == "No", "username"]))
+```
+
+```{r}
+# Calculation for alpha
+alpha <- (alpha_denom-alpha_num) / alpha_denom
+```
+
+```{r}
+# CACE
+ate / alpha
+```
+
+# Hypothesis Tests
+
+```{r}
+# Randomization inference
+po.control <- c(seq(from = 1, to = 5))
+po.treatment <- po.control
+po.control
+```
+
+```{r}
+randomize <- function() {
+sample(c(rep(0,30),rep(1,30)))
+}
+
+randomize()
+```
+
+```{r}
+treatment <- randomize()
+treatment
+```
+
+```{r}
+table(treatment)
+```
+
+```{r}
+outcomes <- po.treatment * treatment + po.control*(1-treatment)
+outcomes
+```
+
+```{r}
+est.ate <- function(outcome, treat) {
+mean(outcome[treat==1]) - mean(outcome[treat==0])
+}
+```
+
+```{r}
+est.ate(outcomes, treatment)
+```
+
+```{r}
+distribution.under.sharp.null <- replicate(5000, est.ate(outcomes,
+randomize() ) )
+```
+
+```{r}
+plot(density(distribution.under.sharp.null),
+main = "Density under Sharp Null")
+abline(v = ate, col = "blue")
+```
+
+```{r}
+mean(ate >= distribution.under.sharp.null) #p-value
+```
+
