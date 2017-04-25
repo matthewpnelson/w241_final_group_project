@@ -73,7 +73,9 @@ colnames(df) <- c("id", "treat_code", "treat_group", "male", "age", "apple",
                   "personal_phone","phone_use", "relationship", "c1", "c2", "c3", 
                   "c4", "c5", "c6", "c7", "b1", "b2", "b3", "b4", "b5", "b6", 
                   "b7", "t1", "t2", "t3", "t4", "t5", "t6", "t7")
-df
+
+sum(df$treat_code == 0) #25 in control
+sum(df$treat_code == 1) #31 in treatment
 ```
 
 Codes:
@@ -118,6 +120,9 @@ colnames(df2)[11] <- "stress"
 
 head(df2)
 nrow(df2)
+
+sum(df2$treat_code == 0) # control obs (baseline and treatment week)
+sum(df2$treat_code == 1) # treatment obs (baseline and treatment week)
 
 ```
 
@@ -181,12 +186,22 @@ did = treatment$stress - baseline$stress
 treat = df2[c(1:length(did)),]$treat_group
 treat_code = df2[c(1:length(did)),]$treat_code
 id = df2[c(1:length(did)),]$id
+age = df2[c(1:length(did)),]$age
 day = df2[c(1:length(did)),]$day
-diff = data.frame(id, treat, treat_code, day, did)
+rel = df2[c(1:length(did)),]$relationship
+male = df2[c(1:length(did)),]$male
+apple = df2[c(1:length(did)),]$apple
+pers = df2[c(1:length(did)),]$personal_phone
+use = df2[c(1:length(did)),]$phone_use
+
+diff = data.frame(id, treat, treat_code, age, rel, male, apple, pers, use, day, did)
 
 # count of NA differences in treatment groups
 sum(is.na(diff$did[diff$treat == "control"])) #38
 sum(is.na(diff$did[diff$treat == "treatment"])) #61
+
+# Number of Difference-in-Difference Observations
+nrow(diff)
 
 # % NA DiD in control and treatment
 38/sum(diff$treat == "control")
@@ -227,7 +242,49 @@ stargazer(m1, m2, m2a, type="text", omit = "id",
 nrow(diff) - sum(is.na(diff$did))
 
 # Non-compliance? sum non-comply over total treatment observations
-sum(df2$comply == 0, na.rm=TRUE)/sum(df2$treat_group == "treatment")
+sum(df2[df2$treat_code == 1,]$comply==0, na.rm=TRUE)/nrow(df2[df2$treat_code==1,])
+
+mean(is.na(diff[diff$treat=="treatment",]$did)) #28 attrited DiD responses in treatment
+mean(is.na(diff[diff$treat=="control",]$did)) # 22% attrited DiD responses in conttrol
+mean(is.na(diff$did)) #25% attrited DiD responses
+```
+
+## Analyzing Attrition
+```{r}
+# create attrition column to tag attrition for plotting
+diff$attrit = 0
+diff[is.na(diff$did),]$attrit = 1
+
+# create weekday column for plotting
+diff$weekday = "Monday"
+diff[diff$day == 2,]$weekday = "Tuesday"
+diff[diff$day == 3,]$weekday = "Wednesday"
+diff[diff$day == 4,]$weekday = "Thursday"
+diff[diff$day == 5,]$weekday = "Friday"
+diff[diff$day == 6,]$weekday = "Saturday"
+diff[diff$day == 7,]$weekday = "Sunday"
+
+# Get counts by day
+diffplot = data.frame(table(diff$weekday, diff$treat, diff$attrit))
+diffplot = diffplot[diffplot$Var3==1,] # get only rows with attrition
+
+# distribution of attrition by treatment group
+label_pos = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+ggplot(diffplot,aes(Var1,Freq,fill=Var2)) +
+  geom_bar(stat="identity",position='dodge') +
+  scale_x_discrete(limits=label_pos) +
+  ggtitle("Attrited DiD Distribution by Treatment Group") +
+  labs(x="Weekday")
+
+# Check t-test of difference in attrited responses
+t.test(diff$attrit ~ diff$treat, var.equal=F) # not significant
+
+# Check with F-test on full responses only
+diff_obs = diff[diff$attrit == 0,]
+
+mod.null <- glm(treat_code ~ 1, family = "binomial", data = diff_obs)
+mod      <- glm(treat_code ~ 1 + male + age + rel + apple + pers + use, family = "binomial", data = diff_obs)
+anova(mod.null, mod, test = "LRT")
 
 ```
 
@@ -236,12 +293,19 @@ sum(df2$comply == 0, na.rm=TRUE)/sum(df2$treat_group == "treatment")
 minstress = min(df2$stress, na.rm=TRUE) #1
 maxstress = max(df2$stress, na.rm=TRUE) #5
 
-# Max Effect, make missing baseline week stress = 5
-# missing treatment week stress = 1
+# Max Effect, 
+# control to have +4 DiD - baseline:1, treatment: 5
+# treatment to have -4 DiD - baseline: 5, treatment 1
+
 df2$maxstress = df2$stress
 
-df2[df2$day<8,]$maxstress[is.na(df2[df2$day<8,]$stress)] = maxstress
-df2[df2$day>7,]$maxstress[is.na(df2[df2$day>7,]$stress)] = minstress
+# control
+df2[df2$day<8 & df2$treat_code == 0,]$maxstress[is.na(df2[df2$day<8 & df2$treat_code == 0,]$stress)] = minstress
+df2[df2$day>7 & df2$treat_code == 0,]$maxstress[is.na(df2[df2$day>7 & df2$treat_code == 0,]$stress)] = maxstress
+
+# treatment
+df2[df2$day<8 & df2$treat_code == 1,]$maxstress[is.na(df2[df2$day<8 & df2$treat_code == 1,]$stress)] = maxstress
+df2[df2$day>7 & df2$treat_code == 1,]$maxstress[is.na(df2[df2$day>7 & df2$treat_code == 1,]$stress)] = minstress
 
 # create rows for difference-in-difference
 baseline = df2[df2$day < 8,]
@@ -249,11 +313,8 @@ treatment = df2[df2$day > 7,]
 max_did = treatment$maxstress - baseline$maxstress
 
 # Build dataframe with DiD as outcome only
-treat = df2[c(1:length(did)),]$treat_group
-treat_code = df2[c(1:length(did)),]$treat_code
-id = df2[c(1:length(did)),]$id
-day = df2[c(1:length(did)),]$day
-max_diff = data.frame(id, treat, treat_code, day, max_did)
+max_diff = diff[,c(1:10, 13)]
+max_diff$max_did = max_did
 
 # distribution by treatment group
 ggplot(data.frame(max_diff$max_did), aes(x=max_diff$max_did, fill = max_diff$treat)) + 
@@ -267,14 +328,14 @@ ggplot(data.frame(max_diff$max_did), aes(x=max_diff$treat,
                                          fill=max_diff$treat)) + 
   geom_boxplot() + 
   ggtitle("Difference in Difference of Stress Levels by Day of Week") + 
-  labs(x="Stress DiD")
+  labs(x="Group", y="DiD Stress")
 
 # Difference in means 
 mean(max_diff[max_diff$treat == "treatment",]$max_did) - 
   mean(max_diff[max_diff$treat == "control",]$max_did)
 
 # max effect model ignoring clustered SEs
-max1_wrong = lm(max_did ~ treat, data=max_diff)
+max1_wrong = lm(max_did ~ treat + weekday, data=max_diff)
 summary(max1_wrong)
 
 # max effect model with clustered SEs
@@ -283,7 +344,7 @@ max1 = coeftest(max1_wrong, max1_wrong$cluster.vcov)
 max1
 
 # max effect model with fixed effects by individual ID
-max2 = lm(max_did ~ treat + factor(id), data = max_diff)
+max2 = lm(max_did ~ treat + weekday + factor(id), data = max_diff)
 summary(max2)
 
 max2$cluster.vcov = cluster.vcov(max2, ~ id)
@@ -293,7 +354,7 @@ max2a
 # Compare models
 stargazer(max1, max2, max2a, type="text", omit = "id",
           dep.var.labels.include = FALSE,
-          add.lines = list(c("Fixed effects?", "No", "Yes", "Yes"),
+          add.lines = list(c("Individual fixed effects?", "No", "Yes", "Yes"),
                            c("Clustered SE?", "Yes", "No", "Yes")),
           column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
 
@@ -301,12 +362,22 @@ stargazer(max1, max2, max2a, type="text", omit = "id",
 
 ## Dealing with Attrition: Min ATE
 ```{r}
-# Min Effect, make missing baseline week stress = 1
-# missing treatment week stress = 5
+minstress = min(df2$stress, na.rm=TRUE) #1
+maxstress = max(df2$stress, na.rm=TRUE) #5
+
+# Max Effect, 
+# control to have -4 DiD - baseline week:5, treatment: 1
+# treatment to have +4 DiD - baseline week: 1, treatment 5
+
 df2$minstress = df2$stress
 
-df2[df2$day<8,]$minstress[is.na(df2[df2$day<8,]$stress)] = minstress
-df2[df2$day>7,]$minstress[is.na(df2[df2$day>7,]$stress)] = maxstress
+# control
+df2[df2$day<8 & df2$treat_code == 0,]$minstress[is.na(df2[df2$day<8 & df2$treat_code == 0,]$stress)] = maxstress
+df2[df2$day>7 & df2$treat_code == 0,]$minstress[is.na(df2[df2$day>7 & df2$treat_code == 0,]$stress)] = minstress
+
+# treatment
+df2[df2$day<8 & df2$treat_code == 1,]$minstress[is.na(df2[df2$day<8 & df2$treat_code == 1,]$stress)] = minstress
+df2[df2$day>7 & df2$treat_code == 1,]$minstress[is.na(df2[df2$day>7 & df2$treat_code == 1,]$stress)] = maxstress
 
 # create rows for difference-in-difference
 baseline = df2[df2$day < 8,]
@@ -314,16 +385,13 @@ treatment = df2[df2$day > 7,]
 min_did = treatment$minstress - baseline$minstress
 
 # Build dataframe with DiD as outcome only
-treat = df2[c(1:length(did)),]$treat_group
-treat_code = df2[c(1:length(did)),]$treat_code
-id = df2[c(1:length(did)),]$id
-day = df2[c(1:length(did)),]$day
-min_diff = data.frame(id, treat, treat_code, day, min_did)
+min_diff = diff[,c(1:10, 13)]
+min_diff$min_did = min_did
 
 # distribution by treatment group
 ggplot(data.frame(min_diff$min_did), aes(x=min_diff$min_did, fill = min_diff$treat)) + 
   geom_bar(position="dodge") + 
-  ggtitle("Difference in Difference of Stress Levels by Day of Week") + 
+  ggtitle("Difference in Difference of Stress Levels") + 
   labs(x="Stress DiD")
 
 # boxplot by treatment group
@@ -331,24 +399,24 @@ ggplot(data.frame(min_diff$min_did), aes(x=min_diff$treat,
                                          y=min_diff$min_did, 
                                          fill=min_diff$treat)) + 
   geom_boxplot() + 
-  ggtitle("Difference in Difference of Stress Levels by Day of Week") + 
-  labs(x="Stress DiD")
+  ggtitle("Difference in Difference of Stress Levels by Group") + 
+  labs(x="Group", y="DiD Stress")
 
 # Difference in means 
 mean(min_diff[min_diff$treat == "treatment",]$min_did) - 
   mean(min_diff[min_diff$treat == "control",]$min_did)
 
-# min effect model ignoring clustered SEs
+# max effect model ignoring clustered SEs
 min1_wrong = lm(min_did ~ treat, data=min_diff)
 summary(min1_wrong)
 
-# min effect model with clustered SEs
+# max effect model with clustered SEs
 min1_wrong$cluster.vcov = cluster.vcov(min1_wrong, ~ id)
 min1 = coeftest(min1_wrong, min1_wrong$cluster.vcov)
 min1
 
-# min effect model with fixed effects by individual ID
-min2 = lm(min_did ~ treat + factor(id), data = min_diff)
+# max effect model with fixed effects by individual ID
+min2 = lm(min_did ~ treat+ factor(id), data = min_diff)
 summary(min2)
 
 min2$cluster.vcov = cluster.vcov(min2, ~ id)
@@ -358,7 +426,7 @@ min2a
 # Compare models
 stargazer(min1, min2, min2a, type="text", omit = "id",
           dep.var.labels.include = FALSE,
-          add.lines = list(c("Fixed effects?", "No", "Yes", "Yes"),
+          add.lines = list(c("Individual fixed effects?", "No", "Yes", "Yes"),
                            c("Clustered SE?", "Yes", "No", "Yes")),
           column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
 
