@@ -1,6 +1,6 @@
 set.seed(20)
 
-d = read.csv("./subjects.csv")
+d = read.csv("./pilot.csv")
 
 # change column names so easier to read
 colnames(d) <- c("ID", "Timestamp", "email", "phone_use", 
