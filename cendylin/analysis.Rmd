@@ -431,3 +431,14 @@ stargazer(min1, min2, min2a, type="text", omit = "id",
           column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
 
 ```
+```{r}
+point.ate <- mean(diff$did[diff$treat_code==1], na.rm=TRUE) - mean(diff$did[diff$treat_code==0], na.rm=TRUE) 
+n.sims = 10e4
+ri.ate <- rep(NA, n.sims)
+for (i in 1:length(ri.ate)) {
+  diff$ri_treat <- sample(diff$treat_code)
+  ri.ate[i] <- mean(diff$did[diff$ri_treat==1], na.rm=TRUE) - mean(diff$did[diff$ri_treat==0], na.rm=TRUE)
+}
+hist(ri.ate, col='#66CC99')
+abline(v=point.ate, col="red")
+```
