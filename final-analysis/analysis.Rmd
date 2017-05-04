@@ -19,63 +19,65 @@ library(multiwayvcov)
 
 ## Prepare Data
 ```{r}
-data = read.csv("./data.csv")
-
-# Remove "full attritors" where we have no treatment
-df = data[data$full_attrit==0,]
+data = read.csv("./data.csv") #uncoded dataframe
+d = data # coded dataframe
 
 # view columns
-names(df)
+names(d)
 
 # drop username row for anonimity
-df = df[,-1]
+d = d[,-1]
 
 # encode gender (male = 1, female = 0)
-df$male = 1
-df$male[df$gender == "Female"] = 0
+d$male = 1
+d$male[d$gender == "Female"] = 0
 
 # encode age (<44 = 1, >44 = 0)
-df$age_code = 1
-df$age_code[df$age == "45-54" | df$age == "55-64"] = 0
+d$age_code = 1
+d$age_code[d$age == "45-54" | d$age == "55-64"] = 0
 
 # encode OS (Apple = 1, Other = 0)
-df$apple = 1
-df$apple[grep("Android", df$os)] = 0 # regex, if contains 'Android', encode as 1
-df$apple[df$os == "Blackberry"] = 0
+d$apple = 1
+d$apple[grep("Android", d$os)] = 0 # regex, if contains 'Android', encode as 1
+d$apple[d$os == "Blackberry"] = 0
 
 # encode num_phones (personal use phone = 0, work & personal phone = 1)
-df$personal_phone = 0
-df$personal_phone[grep("only", df$num_phones)] = 1
+d$personal_phone = 0
+d$personal_phone[grep("only", d$num_phones)] = 1
 
 # encode phone_use (at least once an hour = 1, less than once an hour = 0)
-df$phone_usage = 1
-df$phone_usage[grep("4", df$phone_use)] = 0 # regex, if contains '4', encode as 1
+d$phone_usage = 1
+d$phone_usage[grep("4", d$phone_use)] = 0 # regex, if contains '4', encode as 1
 
 # encode relationship (friend/fam = 1, other = 0)
-df$relation = 1
-df$relation[df$relationship == ""] = 0
+d$relation = 1
+d$relation[d$relationship == ""] = 0
 
 # label treat as treatment/control
-df$treat_group = "treatment"
-df$treat_group[df$treat == 0] = "control"
+d$treat_group = "treatment"
+d$treat_group[d$treat == 0] = "control"
 
 # drop columns
-df = df[,c(-2, -4, -5, -6, -7, -8 ,-9, -10, -11, -12)]
+d = d[,c(-2, -6, -7, -8 ,-9, -10, -11, -12)]
 
 # reorder columns so stress observations on the right
-df = df[c("id", "treat", "treat_group", "male", "age_code", "apple", "personal_phone",
+d = d[c("id", "treat", "full_attrit", "block", "treat_group", "male", "age_code", "apple", "personal_phone",
      "phone_usage", "relation", "c1", "c2", "c3", "c4", "c5", "c6", "c7",
      "b1", "b2", "b3", "b4", "b5", "b6", "b7", 
      "t1", "t2", "t3", "t4", "t5", "t6", "t7")]
 
 # change column names 
-colnames(df) <- c("id", "treat_code", "treat_group", "male", "age", "apple", 
+colnames(d) <- c("id", "treat_code", "attrit", "block", "treat_group", "male", "age", "apple", 
                   "personal_phone","phone_use", "relationship", "c1", "c2", "c3", 
                   "c4", "c5", "c6", "c7", "b1", "b2", "b3", "b4", "b5", "b6", 
                   "b7", "t1", "t2", "t3", "t4", "t5", "t6", "t7")
 
-sum(df$treat_code == 0) #25 in control
-sum(df$treat_code == 1) #31 in treatment
+sum(d$treat_code == 0) #38 in control
+sum(d$treat_code == 1) #39 in treatment
+
+# dataframe for non-attritors
+df = d[d$attrit == 0,]
+nrow(df)
 ```
 
 Codes:
@@ -89,14 +91,15 @@ Codes:
 
 ### Reshape into indivdual observations by day
 ```{r}
-df2 = melt(df, id.var = c("id", "treat_code", "treat_group", "male", "age", "apple", 
+df2 = melt(df, id.var = c("id", "treat_code", "attrit", "block", "treat_group", "male", "age", "apple", 
                   "personal_phone","phone_use", "relationship", "c1", "c2", "c3", 
                   "c4", "c5", "c6", "c7"), variable.name = "day")
+
 # recode 'day' column as number day
 index = levels(df2$day)
 values = c(1:14)
 df2$day = values[match(df2$day, index)]
-df2$day
+
 # reformat compliance columns
 df2$comply = NA
 a = which(df2$day == 8)
@@ -105,28 +108,25 @@ b = which(df2$day == 9)
 df2$comply[b] = df2$c2[b] 
 c = which(df2$day == 10)
 df2$comply[c] = df2$c3[c]
-d = which(df2$day == 11)
-df2$comply[d] = df2$c4[d]
-e = which(df2$day == 12)
-df2$comply[e] = df2$c5[e]
-f = which(df2$day == 13)
-df2$comply[f] = df2$c6[f]
-g = which(df2$day == 14)
-df2$comply[g] = df2$c7[g]
-
-# drop c1-c7, rename 'value' to 'stress'
-df2 = df2[,c(-10, -11, -12, -13, -14, -15, -16)]
-colnames(df2)[11] <- "stress"
-
+e = which(df2$day == 11)
+df2$comply[e] = df2$c4[e]
+f = which(df2$day == 12)
+df2$comply[f] = df2$c5[f]
+g = which(df2$day == 13)
+df2$comply[g] = df2$c6[g]
+h = which(df2$day == 14)
+df2$comply[h] = df2$c7[h]
 head(df2)
-nrow(df2)
+# drop c1-c7, rename 'value' to 'stress'
+df2 = df2[,c(-12, -13, -14, -15, -16, -17, -18)]
+colnames(df2)[13] <- "stress"
 
-sum(df2$treat_code == 0) # control obs (baseline and treatment week)
-sum(df2$treat_code == 1) # treatment obs (baseline and treatment week)
+sum(df2$treat_code == 0) # 350 or 25*14 control obs (baseline and treatment week) 
+sum(df2$treat_code == 1) # 434 or 31*14 treatment obs (baseline and treatment week)
 
 ```
 
-## Exploratory Analysis of Participants
+## Exploratory Analysis on Restricted Subject Pool
 ```{r}
 # Age and Gender
 d2 = data[data$full_attrit == 0,]
@@ -151,7 +151,7 @@ ggplot(data.frame(d2$age), aes(x=d2$age, fill = d2$treat_group)) +
 
 ```
 
-## Covariate balance check
+## Covariate balance check on restricted subject pool
 ```{r}
 # Not using individual observations
 
@@ -173,6 +173,69 @@ t.test(df$phone_use ~ df$treat_code, var.equal=F) # not significant
 # relationship
 t.test(df$relationship ~ df$treat_code, var.equal=F) # not significant
 
+# Check with F-test on restricted subject pool
+mod.null <- glm(treat_code ~ 1, family = "binomial", data = df)
+mod      <- glm(treat_code ~ 1 + male + age + relationship + apple + personal_phone + phone_use, 
+                family = "binomial", data = df)
+anova(mod.null, mod, test = "LRT")
+
+
+```
+
+## Analysis on "full" attritors
+```{r}
+full_attrit = d[d$attrit == 1,]
+nrow(full_attrit)
+
+names(full_attrit)
+sum(full_attrit$treat_code == 1)
+sum(full_attrit$treat_code == 0)
+
+# correlation against all 
+cor(d$attrit, d$treat_code)
+cor(d$attrit, d$male)
+cor(d$attrit, d$age)
+cor(d$attrit, d$apple)
+cor(d$attrit, d$personal_phone)
+cor(d$attrit, d$phone_use)
+cor(d$attrit, d$relationship)
+
+d_treat = d[d$treat_code == 1,]
+d_contr = d[d$treat_code == 0,]
+
+# correlation against control
+cor(d_contr$attrit, d_contr$male)
+cor(d_contr$attrit, d_contr$age)
+cor(d_contr$attrit, d_contr$apple)
+cor(d_contr$attrit, d_contr$personal_phone)
+cor(d_contr$attrit, d_contr$phone_use)
+cor(d_contr$attrit, d_contr$relationship)
+
+# correlation against treatment
+cor(d_treat$attrit, d_treat$male)
+cor(d_treat$attrit, d_treat$age)
+cor(d_treat$attrit, d_treat$apple)
+cor(d_treat$attrit, d_treat$personal_phone)
+cor(d_treat$attrit, d_treat$phone_use)
+cor(d_treat$attrit, d_treat$relationship)
+
+# gender
+t.test(full_attrit$male ~ full_attrit$treat_code, var.equal=F) # not significant
+
+# age
+t.test(df$age ~ df$treat_code, var.equal=F) # not significant
+
+# apple
+t.test(df$apple ~ df$treat_code, var.equal=F) # not significant
+
+# personal phone
+t.test(df$personal_phone ~ df$treat_code, var.equal=F) # not significant
+
+# phone use
+t.test(df$phone_use ~ df$treat_code, var.equal=F) # not significant
+
+# relationship
+t.test(df$relationship ~ df$treat_code, var.equal=F) # not significant
 ```
 
 ## Initial DiD Analysis - ignoring attrition
@@ -186,6 +249,7 @@ did = treatment$stress - baseline$stress
 treat = df2[c(1:length(did)),]$treat_group
 treat_code = df2[c(1:length(did)),]$treat_code
 id = df2[c(1:length(did)),]$id
+block = df2[c(1:length(did)),]$block
 age = df2[c(1:length(did)),]$age
 day = df2[c(1:length(did)),]$day
 rel = df2[c(1:length(did)),]$relationship
@@ -194,66 +258,7 @@ apple = df2[c(1:length(did)),]$apple
 pers = df2[c(1:length(did)),]$personal_phone
 use = df2[c(1:length(did)),]$phone_use
 
-diff = data.frame(id, treat, treat_code, age, rel, male, apple, pers, use, day, did)
-
-# count of NA differences in treatment groups
-sum(is.na(diff$did[diff$treat == "control"])) #38
-sum(is.na(diff$did[diff$treat == "treatment"])) #61
-
-# Number of Difference-in-Difference Observations
-nrow(diff)
-
-# % NA DiD in control and treatment
-38/sum(diff$treat == "control")
-61/sum(diff$treat == "treatment")
-
-# distribution by treatment group
-ggplot(data.frame(diff$did), aes(x=diff$did, fill = diff$treat)) + 
-  geom_bar(position="dodge") + 
-  ggtitle("Difference in Difference of Stress Levels by Day of Week") + 
-  labs(x="Stress DiD")
-
-# boxplot by treatment group
-ggplot(data.frame(diff$did), aes(x=diff$treat, y=diff$did, fill=diff$treat)) + 
-  geom_boxplot() + 
-  ggtitle("Difference in Difference of Stress Levels by Day of Week") + 
-  labs(x="Stress DiD")
-
-# model ignoring attrition and no clusters on ID
-m1_wrong = lm(did ~ treat, data=diff)
-
-# model WITH clusters on ID but ignoring attrition
-m1_wrong$cluster.vcov = cluster.vcov(m1_wrong, ~ id)
-m1 = coeftest(m1_wrong, m1_wrong$cluster.vcov)
-
-# model ignoring attrition and using fixed effects by individual ID
-m2 = lm(did ~ treat + factor(id), data = diff)
-
-m2$cluster.vcov = cluster.vcov(m2, ~ id)
-m2a = coeftest(m2, m2$cluster.vcov)
-
-# Compare models
-stargazer(m1, m2, m2a, type="text", omit = "id",
-          dep.var.labels.include = FALSE,
-          add.lines = list(c("Fixed effects?", "No", "Yes", "Yes"),
-                           c("Clustered SE?", "Yes", "No", "Yes")),
-          column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
-
-nrow(diff) - sum(is.na(diff$did))
-
-# Non-compliance? sum non-comply over total treatment observations
-sum(df2[df2$treat_code == 1,]$comply==0, na.rm=TRUE)/nrow(df2[df2$treat_code==1,])
-
-mean(is.na(diff[diff$treat=="treatment",]$did)) #28 attrited DiD responses in treatment
-mean(is.na(diff[diff$treat=="control",]$did)) # 22% attrited DiD responses in conttrol
-mean(is.na(diff$did)) #25% attrited DiD responses
-```
-
-## Analyzing Attrition
-```{r}
-# create attrition column to tag attrition for plotting
-diff$attrit = 0
-diff[is.na(diff$did),]$attrit = 1
+diff = data.frame(id, treat, treat_code, block, age, rel, male, apple, pers, use, day, did)
 
 # create weekday column for plotting
 diff$weekday = "Monday"
@@ -263,6 +268,78 @@ diff[diff$day == 4,]$weekday = "Thursday"
 diff[diff$day == 5,]$weekday = "Friday"
 diff[diff$day == 6,]$weekday = "Saturday"
 diff[diff$day == 7,]$weekday = "Sunday"
+
+# % of total missing DiD observations
+sum(is.na(diff$did))/nrow(diff)
+
+# count of NA in treatment groups
+sum(is.na(diff$did[diff$treat == "control"])) #38
+sum(is.na(diff$did[diff$treat == "treatment"])) #61
+
+# % NA DiD in control and treatment
+38/sum(diff$treat == "control")
+61/sum(diff$treat == "treatment")
+
+# distribution by treatment group
+ggplot(data.frame(diff$did), aes(x=diff$did, fill = diff$treat)) + 
+  geom_bar(position="dodge") + 
+  ggtitle("Distribution of Change in Stress Levels") + 
+  labs(x="Change in Stress", fill="")
+
+# boxplot by treatment group
+ggplot(data.frame(diff$did), aes(x=diff$treat, y=diff$did, fill=diff$treat)) + 
+  geom_boxplot() + 
+  ggtitle("Difference Stress Levels") + 
+  labs(x="Stress DiD")
+
+# model ignoring attrition and no clusters on ID
+m1_wrong = lm(did ~ treat + weekday, data=diff)
+
+# model WITH clusters on ID but ignoring attrition
+m1_wrong$cluster.vcov = cluster.vcov(m1_wrong, ~ id)
+m1 = coeftest(m1_wrong, m1_wrong$cluster.vcov)
+m1
+
+# model ignoring attrition and using fixed effects by individual ID
+# m2 = lm(did ~ treat + weekday + factor(id), data = diff)
+
+#m2$cluster.vcov = cluster.vcov(m2, ~ id)
+#m2a = coeftest(m2, m2$cluster.vcov)
+
+# Compare models
+#stargazer(m1, m2, type="text", omit = "id",
+#          dep.var.labels.include = FALSE,
+#          add.lines = list(c("Fixed effects?", "No", "Yes"),
+#          column.labels   = c("Clustered SE", "Fixed Effects")))
+```
+
+## Analyzing non-compliance
+```{r}
+# Number non-compliance in treatment group
+nc = sum(df2[df2$treat_code == 1 ,]$comply==0, na.rm=TRUE)
+
+# Total Number of non-missing treatment responses in treatment week
+t = sum(df2$treat_code == 1 & df2$day > 7 & !is.na(df2$stress))
+
+# % of noncompliance
+nc/t
+
+# alpha 
+1-nc/t
+```
+
+
+## Analyzing Attrition
+```{r}
+# %Attrition in each treatment group
+sum(is.na(diff[diff$treat=="treatment",]$did)) #28 attrited DiD responses in treatment
+mean(is.na(diff[diff$treat=="control",]$did)) # 22% attrited DiD responses in conttrol
+mean(is.na(diff$did)) #25% attrited responses overall
+
+# create attrition column to tag attrition for plotting
+diff$attrit = 0
+diff[is.na(diff$did),]$attrit = 1
+nrow(diff)
 
 # Get counts by day
 diffplot = data.frame(table(diff$weekday, diff$treat, diff$attrit))
@@ -276,15 +353,36 @@ ggplot(diffplot,aes(Var1,Freq,fill=Var2)) +
   ggtitle("Attrited DiD Distribution by Treatment Group") +
   labs(x="Weekday")
 
-# Check t-test of difference in attrited responses
-t.test(diff$attrit ~ diff$treat, var.equal=F) # not significant
+# correlation against all 
+cor(diff$attrit, diff$treat_code)
+cor(diff$attrit, diff$male)
+cor(diff$attrit, diff$age)
+cor(diff$attrit, diff$apple)
+cor(diff$attrit, diff$pers)
+cor(diff$attrit, diff$use)
+cor(diff$attrit, diff$rel)
+cor(diff$attrit, diff$day)
 
-# Check with F-test on full responses only
-diff_obs = diff[diff$attrit == 0,]
+diff_treat = diff[diff$treat_code == 1,]
+diff_contr = diff[diff$treat_code == 0,]
 
-mod.null <- glm(treat_code ~ 1, family = "binomial", data = diff_obs)
-mod      <- glm(treat_code ~ 1 + male + age + rel + apple + pers + use, family = "binomial", data = diff_obs)
-anova(mod.null, mod, test = "LRT")
+# correlation against control
+cor(diff_contr$attrit, diff_contr$male)
+cor(diff_contr$attrit, diff_contr$age)
+cor(diff_contr$attrit, diff_contr$apple)
+cor(diff_contr$attrit, diff_contr$pers)
+cor(diff_contr$attrit, diff_contr$use)
+cor(diff_contr$attrit, diff_contr$rel)
+cor(diff_contr$attrit, diff_contr$day)
+
+# correlation against treatment
+cor(diff_treat$attrit, diff_treat$male)
+cor(diff_treat$attrit, diff_treat$age)
+cor(diff_treat$attrit, diff_treat$apple)
+cor(diff_treat$attrit, diff_treat$pers)
+cor(diff_treat$attrit, diff_treat$use)
+cor(diff_treat$attrit, diff_treat$rel)
+cor(diff_treat$attrit, diff_treat$day)
 
 ```
 
@@ -313,14 +411,15 @@ treatment = df2[df2$day > 7,]
 max_did = treatment$maxstress - baseline$maxstress
 
 # Build dataframe with DiD as outcome only
-max_diff = diff[,c(1:10, 13)]
+max_diff = diff[,c(1:11, 13:14)]
 max_diff$max_did = max_did
 
 # distribution by treatment group
 ggplot(data.frame(max_diff$max_did), aes(x=max_diff$max_did, fill = max_diff$treat)) + 
   geom_bar(position="dodge") + 
-  ggtitle("Difference in Difference of Stress Levels by Day of Week") + 
-  labs(x="Stress DiD")
+  ggtitle("Distribution of Change in Stress Levels (Max Effect)") + 
+  labs(x="Change in Stress", fill="") +
+  scale_x_discrete(limits=c(-4:4))
 
 # boxplot by treatment group
 ggplot(data.frame(max_diff$max_did), aes(x=max_diff$treat, 
@@ -344,19 +443,19 @@ max1 = coeftest(max1_wrong, max1_wrong$cluster.vcov)
 max1
 
 # max effect model with fixed effects by individual ID
-max2 = lm(max_did ~ treat + weekday + factor(id), data = max_diff)
-summary(max2)
+#max2 = lm(max_did ~ treat + weekday + factor(id), data = max_diff)
+#summary(max2)
 
-max2$cluster.vcov = cluster.vcov(max2, ~ id)
-max2a = coeftest(max2, max2$cluster.vcov)
-max2a
+#max2$cluster.vcov = cluster.vcov(max2, ~ id)
+#max2a = coeftest(max2, max2$cluster.vcov)
+#max2a
 
 # Compare models
-stargazer(max1, max2, max2a, type="text", omit = "id",
-          dep.var.labels.include = FALSE,
-          add.lines = list(c("Individual fixed effects?", "No", "Yes", "Yes"),
-                           c("Clustered SE?", "Yes", "No", "Yes")),
-          column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
+#stargazer(max1, max2, max2a, type="text", omit = "id",
+#          dep.var.labels.include = FALSE,
+#          add.lines = list(c("Individual fixed effects?", "No", "Yes", "Yes"),
+#                           c("Clustered SE?", "Yes", "No", "Yes")),
+#          column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
 
 ```
 
@@ -385,14 +484,15 @@ treatment = df2[df2$day > 7,]
 min_did = treatment$minstress - baseline$minstress
 
 # Build dataframe with DiD as outcome only
-min_diff = diff[,c(1:10, 13)]
+min_diff = diff[,c(1:11, 13:14)]
 min_diff$min_did = min_did
 
 # distribution by treatment group
 ggplot(data.frame(min_diff$min_did), aes(x=min_diff$min_did, fill = min_diff$treat)) + 
   geom_bar(position="dodge") + 
-  ggtitle("Difference in Difference of Stress Levels") + 
-  labs(x="Stress DiD")
+  ggtitle("Distribution of Change in Stress Levels (Min Effect)") + 
+  labs(x="Change in Stress", fill="") +
+  scale_x_discrete(limits=c(-4:4))
 
 # boxplot by treatment group
 ggplot(data.frame(min_diff$min_did), aes(x=min_diff$treat, 
@@ -407,8 +507,7 @@ mean(min_diff[min_diff$treat == "treatment",]$min_did) -
   mean(min_diff[min_diff$treat == "control",]$min_did)
 
 # max effect model ignoring clustered SEs
-min1_wrong = lm(min_did ~ treat, data=min_diff)
-summary(min1_wrong)
+min1_wrong = lm(min_did ~ treat + weekday, data=min_diff)
 
 # max effect model with clustered SEs
 min1_wrong$cluster.vcov = cluster.vcov(min1_wrong, ~ id)
@@ -416,29 +515,16 @@ min1 = coeftest(min1_wrong, min1_wrong$cluster.vcov)
 min1
 
 # max effect model with fixed effects by individual ID
-min2 = lm(min_did ~ treat+ factor(id), data = min_diff)
-summary(min2)
+#min2 = lm(min_did ~ treat+ factor(id), data = min_diff)
+#summary(min2)
 
-min2$cluster.vcov = cluster.vcov(min2, ~ id)
-min2a = coeftest(min2, min2$cluster.vcov)
-min2a
+#min2$cluster.vcov = cluster.vcov(min2, ~ id)
+#min2a = coeftest(min2, min2$cluster.vcov)
+#min2a
 
 # Compare models
-stargazer(min1, min2, min2a, type="text", omit = "id",
-          dep.var.labels.include = FALSE,
-          add.lines = list(c("Individual fixed effects?", "No", "Yes", "Yes"),
-                           c("Clustered SE?", "Yes", "No", "Yes")),
-          column.labels   = c("Clustered SE", "Fixed Effects", "Both"))
+stargazer(m1, max1, min1, type="text", 
+          column.labels   = c("Ignore Attrition", "Max Effect", "Min Effect"))
 
 ```
-```{r}
-point.ate <- mean(diff$did[diff$treat_code==1], na.rm=TRUE) - mean(diff$did[diff$treat_code==0], na.rm=TRUE) 
-n.sims = 10e4
-ri.ate <- rep(NA, n.sims)
-for (i in 1:length(ri.ate)) {
-  diff$ri_treat <- sample(diff$treat_code)
-  ri.ate[i] <- mean(diff$did[diff$ri_treat==1], na.rm=TRUE) - mean(diff$did[diff$ri_treat==0], na.rm=TRUE)
-}
-hist(ri.ate, col='#66CC99')
-abline(v=point.ate, col="red")
-```
+
